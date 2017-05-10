@@ -1,0 +1,26 @@
+<idea-plugin>
+    <id>org.seedstack.intellij.coffig</id>
+    <name>SeedStack configuration</name>
+    <version>1.0.0</version>
+    <vendor email="adrien.lauer@gmail.com" url="http://seedstack.org">SeedStack</vendor>
+
+    <description><![CDATA[
+      SeedStack configuration plugin.
+    ]]></description>
+
+    <change-notes><![CDATA[
+      Initial version.
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="145.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>org.jetbrains.plugins.yaml</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileTypeFactory implementation="org.seedstack.intellij.coffig.CoffigFileTypeFactory"/>
+    </extensions>
+</idea-plugin>
