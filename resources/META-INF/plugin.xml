@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>org.seedstack.intellij.coffig</id>
+    <id>org.seedstack.intellij.config</id>
     <name>SeedStack configuration</name>
     <version>1.0.0</version>
     <vendor email="adrien.lauer@gmail.com" url="http://seedstack.org">SeedStack</vendor>
@@ -21,6 +21,7 @@
     <depends>org.jetbrains.plugins.yaml</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileTypeFactory implementation="org.seedstack.intellij.coffig.CoffigFileTypeFactory"/>
+        <fileTypeFactory implementation="org.seedstack.intellij.config.CoffigFileTypeFactory"/>
+        <completion.contributor language="yaml" implementationClass="org.seedstack.intellij.config.CoffigCompletionContributor"/>
     </extensions>
 </idea-plugin>

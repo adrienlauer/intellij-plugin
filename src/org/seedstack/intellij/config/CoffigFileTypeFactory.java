@@ -1,7 +1,6 @@
-package org.seedstack.intellij.coffig;
+package org.seedstack.intellij.config;
 
 import com.intellij.openapi.fileTypes.ExactFileNameMatcher;
-import com.intellij.openapi.fileTypes.FileNameMatcher;
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;
 import org.jetbrains.annotations.NotNull;
