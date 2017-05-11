@@ -25,6 +25,6 @@
         <framework.type implementation="org.seedstack.intellij.SeedStackFramework"/>
         <fileTypeFactory implementation="org.seedstack.intellij.config.CoffigFileTypeFactory"/>
         <lang.parserDefinition language="coffig/yaml" implementationClass="org.seedstack.intellij.config.CoffigParserDefinition"/>
-        <completion.contributor language="yaml" implementationClass="org.seedstack.intellij.config.CoffigCompletionContributor"/>
+        <completion.contributor language="yaml" implementationClass="org.seedstack.intellij.config.completion.CoffigCompletionContributor"/>
     </extensions>
 </idea-plugin>
