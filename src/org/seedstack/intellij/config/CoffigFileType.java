@@ -13,13 +13,13 @@ public class CoffigFileType extends LanguageFileType implements FileTypeIdentifi
     public static final CoffigFileType INSTANCE = new CoffigFileType();
 
     private CoffigFileType() {
-        super(CoffigLanguage.YAMLINSTANCE);
+        super(CoffigLanguage.INSTANCE);
     }
 
     @NotNull
     @Override
     public String getName() {
-        return "Coffig file";
+        return "Coffig YAML";
     }
 
     @NotNull
@@ -37,7 +37,7 @@ public class CoffigFileType extends LanguageFileType implements FileTypeIdentifi
     @Nullable
     @Override
     public Icon getIcon() {
-        return SeedStackIcons.FILE;
+        return SeedStackIcons.LOGO;
     }
 
     @Override

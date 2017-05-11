@@ -1,8 +1,8 @@
 <idea-plugin>
-    <id>org.seedstack.intellij.config</id>
-    <name>SeedStack configuration</name>
+    <id>org.seedstack.intellij</id>
+    <name>SeedStack</name>
     <version>1.0.0</version>
-    <vendor email="adrien.lauer@gmail.com" url="http://seedstack.org">SeedStack</vendor>
+    <vendor email="adrien.lauer@gmail.com" url="http://seedstack.org">seedstack.org</vendor>
 
     <description><![CDATA[
       SeedStack configuration plugin.
@@ -19,9 +19,12 @@
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>org.jetbrains.plugins.yaml</depends>
+    <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <framework.type implementation="org.seedstack.intellij.SeedStackFramework"/>
         <fileTypeFactory implementation="org.seedstack.intellij.config.CoffigFileTypeFactory"/>
+        <lang.parserDefinition language="coffig/yaml" implementationClass="org.seedstack.intellij.config.CoffigParserDefinition"/>
         <completion.contributor language="yaml" implementationClass="org.seedstack.intellij.config.CoffigCompletionContributor"/>
     </extensions>
 </idea-plugin>

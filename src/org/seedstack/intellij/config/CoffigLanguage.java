@@ -2,21 +2,13 @@ package org.seedstack.intellij.config;
 
 import com.intellij.lang.Language;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.yaml.YAMLLanguage;
 
 public class CoffigLanguage extends Language {
-    public static final Language YAMLINSTANCE;
-
-    static {
-        try {
-            Class<?> YAMLLanguageClass = Class.forName("org.jetbrains.yaml.YAMLLanguage");
-            YAMLINSTANCE = (Language) YAMLLanguageClass.getField("INSTANCE").get(null);
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to access YAML language", e);
-        }
-    }
+    public static final CoffigLanguage INSTANCE = new CoffigLanguage();
 
     private CoffigLanguage() {
-        super(YAMLINSTANCE, "coffig/yaml", "application/yaml", "application/x-yaml");
+        super(YAMLLanguage.INSTANCE, "coffig/yaml", "application/yaml");
     }
 
     @NotNull
