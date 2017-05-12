@@ -6,28 +6,104 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiAnnotationOwner;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiModifierList;
+import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.AnnotatedElementsSearch;
 import com.intellij.util.ProcessingContext;
-import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 import org.seedstack.intellij.config.CoffigLanguage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 abstract class AbstractCompletionProvider extends CompletionProvider<CompletionParameters> {
+    private static final String COFFIG_ANNOTATION_QNAME = "org.seedstack.coffig.Config";
+    private PsiClass configAnnotation;
     private Project project;
     private JavaPsiFacade javaPsiFacade;
 
+    @Override
+    protected final void addCompletions(@NotNull CompletionParameters completionParameters, ProcessingContext processingContext, @NotNull CompletionResultSet completionResultSet) {
+        if (isConfigFile(completionParameters)) {
+            Project project = completionParameters.getOriginalFile().getProject();
+            JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(project);
+            Optional<PsiClass> optionalConfigAnnotation = Optional.ofNullable(javaPsiFacade.findClass(COFFIG_ANNOTATION_QNAME, GlobalSearchScope.allScope(project)));
+            if (optionalConfigAnnotation.isPresent()) {
+                this.project = project;
+                this.javaPsiFacade = javaPsiFacade;
+                this.configAnnotation = optionalConfigAnnotation.get();
+                doAddCompletions(completionParameters, processingContext, completionResultSet);
+            }
+        }
+    }
+
     protected boolean isConfigFile(@NotNull CompletionParameters completionParameters) {
         return completionParameters.getOriginalFile().getLanguage() == CoffigLanguage.INSTANCE;
+    }
+
+    protected Optional<PsiField> findConfigField(PsiClass configClass, String propertyName) {
+        for (PsiField psiField : configClass.getAllFields()) {
+            if (propertyName.equals(psiField.getName())) {
+                return Optional.of(psiField);
+            }
+            Optional<String> realName = findConfigAnnotation(psiField).flatMap(this::getConfigValue);
+            if (realName.isPresent() && propertyName.equals(realName.get())) {
+                return Optional.of(psiField);
+            }
+        }
+        return Optional.empty();
+    }
+
+    protected Optional<PsiClass> findConfigClass(List<String> path) {
+        PsiClass result = null;
+        for (String part : path) {
+            Optional<PsiClass> psiClass = Optional.ofNullable(findConfigClasses(result).get(part));
+            if (psiClass.isPresent()) {
+                result = psiClass.get();
+            } else {
+                return Optional.empty();
+            }
+        }
+        return Optional.ofNullable(result);
+    }
+
+    protected Map<String, PsiClass> findConfigClasses(@Nullable PsiClass containingClass) {
+        Map<String, PsiClass> configClasses = new HashMap<>();
+        AnnotatedElementsSearch.searchPsiClasses(configAnnotation, GlobalSearchScope.allScope(project)).forEach(psiClass -> {
+            if (psiClass.getContainingClass() == containingClass) {
+                findConfigAnnotation(psiClass).flatMap(this::getConfigValue).ifPresent(key -> configClasses.put(key, psiClass));
+            }
+            return true;
+        });
+        return configClasses;
+    }
+
+    protected Optional<PsiAnnotation> findConfigAnnotation(PsiModifierListOwner psiModifierListOwner) {
+        return Optional.ofNullable(psiModifierListOwner.getModifierList())
+                .map(PsiAnnotationOwner::getAnnotations)
+                .map(Arrays::stream)
+                .map(stream -> stream.filter(annotation -> COFFIG_ANNOTATION_QNAME.equals(annotation.getQualifiedName())))
+                .flatMap(Stream::findFirst);
+    }
+
+    protected Optional<String> getConfigValue(PsiAnnotation psiAnnotation) {
+        return Optional.of(psiAnnotation)
+                .map(PsiAnnotation::getParameterList)
+                .map(PsiElement::getFirstChild)
+                .map(PsiElement::getFirstChild)
+                .map(PsiElement::getText)
+                .map(str -> str.startsWith("\"") && str.endsWith("\"") ? str.substring(1, str.length() - 1) : null);
     }
 
     protected List<String> resolvePath(PsiElement psiElement) {
@@ -38,38 +114,6 @@ abstract class AbstractCompletionProvider extends CompletionProvider<CompletionP
             }
         } while ((psiElement = psiElement.getParent()) != null);
         return path;
-    }
-
-    protected Map<String, PsiClass> findConfigClasses(String prefix) {
-        Map<String, PsiClass> configClasses = new HashMap<>();
-        PsiClass configAnnotation = javaPsiFacade.findClass("org.seedstack.coffig.Config", GlobalSearchScope.allScope(project));
-        if (configAnnotation != null) {
-            Query<PsiClass> configurationClasses = AnnotatedElementsSearch.searchPsiClasses(configAnnotation, GlobalSearchScope.allScope(project));
-            for (PsiClass psiClass : configurationClasses.findAll()) {
-                if (psiClass.getContainingClass() == null) {
-                    PsiModifierList modifierList = psiClass.getModifierList();
-                    if (modifierList != null) {
-                        PsiAnnotation[] annotations = modifierList.getAnnotations();
-                    }
-                }
-            }
-        }
-        return configClasses;
-    }
-
-    @Override
-    protected final void addCompletions(@NotNull CompletionParameters completionParameters, ProcessingContext processingContext, @NotNull CompletionResultSet completionResultSet) {
-        // Check if Coffig file
-        if (!isConfigFile(completionParameters)) {
-            return;
-        }
-
-        // Get useful values
-        project = completionParameters.getOriginalFile().getProject();
-        javaPsiFacade = JavaPsiFacade.getInstance(project);
-
-        // Process and add completions
-        doAddCompletions(completionParameters, processingContext, completionResultSet);
     }
 
     protected abstract void doAddCompletions(@NotNull CompletionParameters completionParameters, ProcessingContext processingContext, @NotNull CompletionResultSet completionResultSet);
