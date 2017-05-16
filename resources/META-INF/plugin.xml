@@ -23,8 +23,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <framework.type implementation="org.seedstack.intellij.SeedStackFramework"/>
-        <fileTypeFactory implementation="org.seedstack.intellij.config.CoffigFileTypeFactory"/>
-        <lang.parserDefinition language="coffig/yaml" implementationClass="org.seedstack.intellij.config.CoffigParserDefinition"/>
+        <fileTypeFactory implementation="org.seedstack.intellij.config.yaml.CoffigYAMLFileTypeFactory"/>
+        <lang.parserDefinition language="coffig/yaml" implementationClass="org.seedstack.intellij.config.yaml.CoffigYAMLParserDefinition"/>
         <completion.contributor language="yaml" implementationClass="org.seedstack.intellij.config.completion.CoffigCompletionContributor"/>
     </extensions>
 </idea-plugin>

@@ -1,13 +1,13 @@
-package org.seedstack.intellij.config;
+package org.seedstack.intellij.config.yaml;
 
 import com.intellij.lang.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLLanguage;
 
-public class CoffigLanguage extends Language {
-    public static final CoffigLanguage INSTANCE = new CoffigLanguage();
+class CoffigYAMLLanguage extends Language {
+    static final CoffigYAMLLanguage INSTANCE = new CoffigYAMLLanguage();
 
-    private CoffigLanguage() {
+    private CoffigYAMLLanguage() {
         super(YAMLLanguage.INSTANCE, "coffig/yaml", "application/yaml");
     }
 

@@ -1,4 +1,4 @@
-package org.seedstack.intellij.config;
+package org.seedstack.intellij.config.yaml;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.ex.FileTypeIdentifiableByVirtualFile;
@@ -9,11 +9,11 @@ import org.seedstack.intellij.SeedStackIcons;
 
 import javax.swing.*;
 
-public class CoffigFileType extends LanguageFileType implements FileTypeIdentifiableByVirtualFile {
-    public static final CoffigFileType INSTANCE = new CoffigFileType();
+class CoffigYAMLFileType extends LanguageFileType implements FileTypeIdentifiableByVirtualFile {
+    static final CoffigYAMLFileType INSTANCE = new CoffigYAMLFileType();
 
-    private CoffigFileType() {
-        super(CoffigLanguage.INSTANCE);
+    private CoffigYAMLFileType() {
+        super(CoffigYAMLLanguage.INSTANCE);
     }
 
     @NotNull

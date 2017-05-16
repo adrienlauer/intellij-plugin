@@ -1,12 +1,12 @@
-package org.seedstack.intellij.config;
+package org.seedstack.intellij.config.yaml;
 
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IFileElementType;
 import org.jetbrains.yaml.YAMLParserDefinition;
 
-public class CoffigParserDefinition extends YAMLParserDefinition {
-    private static final IFileElementType FILE = new IFileElementType(CoffigLanguage.INSTANCE);
+class CoffigYAMLParserDefinition extends YAMLParserDefinition {
+    private static final IFileElementType FILE = new IFileElementType(CoffigYAMLLanguage.INSTANCE);
 
     public IFileElementType getFileNodeType() {
         return FILE;

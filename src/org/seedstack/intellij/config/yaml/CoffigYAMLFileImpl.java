@@ -1,4 +1,4 @@
-package org.seedstack.intellij.config;
+package org.seedstack.intellij.config.yaml;
 
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.lang.ASTNode;
@@ -18,14 +18,14 @@ import java.util.List;
 /**
  * @author oleg
  */
-public class CoffigYAMLFileImpl extends PsiFileBase implements YAMLFile {
-    public CoffigYAMLFileImpl(FileViewProvider viewProvider) {
-        super(viewProvider, CoffigLanguage.INSTANCE);
+class CoffigYAMLFileImpl extends PsiFileBase implements YAMLFile {
+    CoffigYAMLFileImpl(FileViewProvider viewProvider) {
+        super(viewProvider, CoffigYAMLLanguage.INSTANCE);
     }
 
     @NotNull
     public FileType getFileType() {
-        return CoffigFileType.INSTANCE;
+        return CoffigYAMLFileType.INSTANCE;
     }
 
     @Override
