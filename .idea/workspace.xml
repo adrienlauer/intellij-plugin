@@ -2,18 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f9d6d6e9-8150-4414-93d9-aabd72b5d5c1" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/AbstractCompletionProvider.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/KeyCompletionProvider.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/ValueCompletionProvider.java" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/CoffigFileType.java" afterPath="$PROJECT_DIR$/src/org/seedstack/intellij/config/yaml/CoffigYAMLFileType.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/CoffigFileTypeFactory.java" afterPath="$PROJECT_DIR$/src/org/seedstack/intellij/config/yaml/CoffigYAMLFileTypeFactory.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/CoffigLanguage.java" afterPath="$PROJECT_DIR$/src/org/seedstack/intellij/config/yaml/CoffigYAMLLanguage.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/CoffigParserDefinition.java" afterPath="$PROJECT_DIR$/src/org/seedstack/intellij/config/yaml/CoffigYAMLParserDefinition.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/CoffigYAMLFileImpl.java" afterPath="$PROJECT_DIR$/src/org/seedstack/intellij/config/yaml/CoffigYAMLFileImpl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/META-INF/plugin.xml" afterPath="$PROJECT_DIR$/resources/META-INF/plugin.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/SeedStackFramework.java" afterPath="$PROJECT_DIR$/src/org/seedstack/intellij/SeedStackFramework.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/CoffigCompletionContributor.java" afterPath="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/CoffigCompletionContributor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/KeyCompletionProvider.java" afterPath="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/KeyCompletionProvider.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/ValueCompletionProvider.java" afterPath="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/ValueCompletionProvider.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -59,11 +50,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ValueCompletionProvider.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ValueCompletionProvider.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/ValueCompletionProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="487">
-              <caret line="56" column="27" lean-forward="false" selection-start-line="56" selection-start-column="27" selection-end-line="56" selection-end-column="27" />
+            <state relative-caret-position="341">
+              <caret line="50" column="47" lean-forward="true" selection-start-line="50" selection-start-column="47" selection-end-line="50" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -84,8 +75,8 @@
       <file leaf-file-name="KeyCompletionProvider.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/KeyCompletionProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="31" column="41" lean-forward="false" selection-start-line="31" selection-start-column="41" selection-end-line="31" selection-end-column="41" />
+            <state relative-caret-position="480">
+              <caret line="43" column="38" lean-forward="false" selection-start-line="43" selection-start-column="38" selection-end-line="43" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -94,8 +85,8 @@
       <file leaf-file-name="CompletionProgressIndicator.class" pinned="false" current-in-tab="false">
         <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/codeInsight/completion/CompletionProgressIndicator.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="428">
-              <caret line="164" column="26" lean-forward="false" selection-start-line="164" selection-start-column="26" selection-end-line="164" selection-end-column="26" />
+            <state relative-caret-position="556">
+              <caret line="172" column="0" lean-forward="false" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -111,11 +102,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CoffigCompletionContributor.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="CoffigCompletionContributor.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/CoffigCompletionContributor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="704">
-              <caret line="66" column="64" lean-forward="false" selection-start-line="66" selection-start-column="64" selection-end-line="66" selection-end-column="64" />
+            <state relative-caret-position="420">
+              <caret line="60" column="27" lean-forward="true" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -230,13 +221,13 @@
         <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/yaml/CoffigYAMLParserDefinition.java" />
         <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/yaml/CoffigYAMLLanguage.java" />
         <option value="$PROJECT_DIR$/src/org/seedstack/intellij/spi/config/CompletionResolver.java" />
-        <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/KeyCompletionProvider.java" />
         <option value="$PROJECT_DIR$/src/org/seedstack/intellij/spi/config/ValueCompletionResolver.java" />
         <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/value/BooleanCompletionResolver.java" />
         <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/value/ClassCompletionResolver.java" />
         <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/value/EnumCompletionResolver.java" />
-        <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/CoffigCompletionContributor.java" />
         <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/ValueCompletionProvider.java" />
+        <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/KeyCompletionProvider.java" />
+        <option value="$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/CoffigCompletionContributor.java" />
       </list>
     </option>
   </component>
@@ -774,12 +765,12 @@
       <workItem from="1494488123869" duration="22742000" />
       <workItem from="1494525054178" duration="6541000" />
       <workItem from="1494606310346" duration="44085000" />
-      <workItem from="1494943347779" duration="6225000" />
+      <workItem from="1494943347779" duration="8334000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="106429000" />
+    <option name="totallyTimeSpent" value="108538000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="1173" extended-state="6" />
@@ -825,12 +816,11 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="234" />
+      <option name="time" value="243" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="#org.jetbrains.idea.devkit.run.PluginConfigurationType">
-        <watch expression="yamlDocument.getStartOffsetInParent()" language="JAVA" />
-        <watch expression="Objects.equals(completionParameters.getOriginalFile().getLanguage().getID(), &quot;coffig/yaml&quot;)" />
+        <watch expression="findConfigClasses(configAnnotation.get(), project, containingClass).keySet()" />
       </configuration>
     </watches-manager>
   </component>
@@ -1148,14 +1138,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/codeInsight/completion/CompletionProgressIndicator.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="428">
-          <caret line="164" column="26" lean-forward="false" selection-start-line="164" selection-start-column="26" selection-end-line="164" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/META-INF/services/org.seedstack.intellij.spi.config.ValueCompletionResolver">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="48">
@@ -1168,14 +1150,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="48">
           <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/KeyCompletionProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="31" column="41" lean-forward="false" selection-start-line="31" selection-start-column="41" selection-end-line="31" selection-end-column="41" />
           <folding />
         </state>
       </provider>
@@ -1209,14 +1183,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/CoffigCompletionContributor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="704">
-          <caret line="66" column="64" lean-forward="false" selection-start-line="66" selection-start-column="64" selection-end-line="66" selection-end-column="64" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/seedstack/intellij/spi/config/ValueCompletionResolver.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="112">
@@ -1235,8 +1201,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/ValueCompletionProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="487">
-          <caret line="56" column="27" lean-forward="false" selection-start-line="56" selection-start-column="27" selection-end-line="56" selection-end-column="27" />
+        <state relative-caret-position="341">
+          <caret line="50" column="47" lean-forward="true" selection-start-line="50" selection-start-column="47" selection-end-line="50" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/codeInsight/completion/CompletionProgressIndicator.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="556">
+          <caret line="172" column="0" lean-forward="false" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/KeyCompletionProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="43" column="38" lean-forward="false" selection-start-line="43" selection-start-column="38" selection-end-line="43" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/seedstack/intellij/config/completion/CoffigCompletionContributor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="60" column="27" lean-forward="true" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
           <folding />
         </state>
       </provider>

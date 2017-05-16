@@ -42,6 +42,6 @@ class KeyCompletionProvider implements CompletionResolver {
         }
 
         return keyStream.map(key -> key.split("\\.")[0])
-                .map(key -> LookupElementBuilder.create(key + ": ").withPresentableText(key));
+                .map(LookupElementBuilder::create);
     }
 }

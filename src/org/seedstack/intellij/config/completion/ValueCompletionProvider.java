@@ -53,7 +53,6 @@ class ValueCompletionProvider implements CompletionResolver {
                         .orElse(Stream.empty());
             }
         }
-
         return Stream.empty();
     }
 

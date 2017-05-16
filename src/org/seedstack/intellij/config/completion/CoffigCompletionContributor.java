@@ -55,7 +55,7 @@ public class CoffigCompletionContributor extends CompletionContributor {
                     String prefix = completionResultSet.getPrefixMatcher().getPrefix();
                     if (isInsideMacro(prefix)) {
                         String reference = prefix.substring(prefix.lastIndexOf(MACRO_START) + MACRO_START.length());
-                        String[] referencePath = reference.split("\\.");
+                        String[] referencePath = reference.isEmpty() ? new String[0] : reference.split("\\.");
                         stream = KEY_COMPLETION_PROVIDER.resolve(Arrays.asList(referencePath), position);
                     } else {
                         stream = VALUE_COMPLETION_PROVIDER.resolve(path, position);
@@ -64,7 +64,10 @@ public class CoffigCompletionContributor extends CompletionContributor {
             }
 
             if (stream != null) {
-                stream.forEach(completionResultSet::addElement);
+                stream.forEach(element -> {
+                    System.out.println(element);
+                    completionResultSet.addElement(element);
+                });
             }
         }
 
