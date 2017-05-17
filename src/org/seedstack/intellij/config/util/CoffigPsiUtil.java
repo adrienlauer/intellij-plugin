@@ -1,32 +1,30 @@
 package org.seedstack.intellij.config.util;
 
-import com.intellij.codeInsight.completion.JavaLookupElementBuilder;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiAnnotationOwner;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiEnumConstant;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiModifierListOwner;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.AnnotatedElementsSearch;
-import com.intellij.psi.search.searches.ClassInheritorsSearch;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.yaml.YAMLTokenTypes;
+import org.jetbrains.yaml.psi.YAMLDocument;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
+import org.jetbrains.yaml.psi.YAMLMapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public final class CoffigPsiUtil {
@@ -40,31 +38,18 @@ public final class CoffigPsiUtil {
         return Optional.ofNullable(JavaPsiFacade.getInstance(project).findClass(COFFIG_ANNOTATION_QNAME, GlobalSearchScope.allScope(project)));
     }
 
-    public static Set<PsiClass> classesExtending(PsiClassType psiClassReferenceType, boolean includeAbstract) {
-        Set<PsiClass> results = new HashSet<>();
-        Optional.of(psiClassReferenceType)
-                .map(PsiClassType::resolve)
-                .map(ClassInheritorsSearch::search)
-                .ifPresent(psiClasses -> psiClasses.forEach(psiClass -> {
-                    if (!includeAbstract && !psiClass.hasModifierProperty("abstract")) {
-                        results.add(psiClass);
-                    }
-                }));
-        return results;
+    public static boolean isConfigFile(@NotNull PsiElement psiElement) {
+        return Objects.equals(psiElement.getContainingFile().getLanguage().getID(), "coffig/yaml");
     }
 
-    public static Optional<LookupElementBuilder> buildLookup(PsiClass psiClass) {
-        String qualifiedName = psiClass.getQualifiedName();
-        String name = psiClass.getName();
-        if (qualifiedName != null && name != null) {
-            return Optional.of(JavaLookupElementBuilder.forClass(psiClass, qualifiedName, true).withPresentableText(name));
-        } else {
-            return Optional.empty();
-        }
+    public static boolean isKey(PsiElement position) {
+        PsiElement parentContext = position.getParent().getContext();
+        PsiElement leftContext = Optional.ofNullable(position.getContext()).map(PsiElement::getPrevSibling).orElse(null);
+        return parentContext instanceof YAMLMapping || parentContext instanceof YAMLDocument || leftContext != null && ((LeafPsiElement) leftContext).getElementType() == YAMLTokenTypes.INDENT;
     }
 
-    public static Optional<LookupElementBuilder> buildLookup(PsiEnumConstant psiEnumConstant) {
-        return Optional.of(LookupElementBuilder.create(psiEnumConstant).withIcon(psiEnumConstant.getIcon(Iconable.ICON_FLAG_VISIBILITY)));
+    public static boolean isValue(PsiElement position) {
+        return position.getParent().getContext() instanceof YAMLKeyValue;
     }
 
     public static List<String> resolvePath(PsiElement psiElement) {

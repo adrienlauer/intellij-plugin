@@ -1,16 +1,19 @@
 package org.seedstack.intellij.config.completion.value;
 
+import com.intellij.codeInsight.completion.JavaLookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiWildcardType;
-import org.seedstack.intellij.config.util.CoffigPsiUtil;
+import com.intellij.psi.search.searches.ClassInheritorsSearch;
 import org.seedstack.intellij.spi.config.ValueCompletionResolver;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class ClassCompletionResolver implements ValueCompletionResolver {
@@ -28,7 +31,7 @@ public class ClassCompletionResolver implements ValueCompletionResolver {
             PsiWildcardType psiWildcardType = ((PsiWildcardType) parameterTypes[0]);
             if (psiWildcardType.isBounded()) {
                 if (psiWildcardType.isExtends()) {
-                    psiClassStream = CoffigPsiUtil.classesExtending((PsiClassType) psiWildcardType.getExtendsBound(), false).stream();
+                    psiClassStream = classesExtending((PsiClassType) psiWildcardType.getExtendsBound()).stream();
                 } else if (psiWildcardType.isSuper()) {
                     psiClassStream = Arrays.stream(psiWildcardType.getSuperBound().getSuperTypes())
                             .map(psiType -> (PsiClassType) psiType)
@@ -37,9 +40,32 @@ public class ClassCompletionResolver implements ValueCompletionResolver {
             }
         }
         if (psiClassStream != null) {
-            return psiClassStream.map(CoffigPsiUtil::buildLookup).filter(Optional::isPresent).map(Optional::get);
+            return psiClassStream.map(this::buildClassLookup).filter(Optional::isPresent).map(Optional::get);
         } else {
             return Stream.empty();
+        }
+    }
+
+    private Set<PsiClass> classesExtending(PsiClassType psiClassReferenceType) {
+        Set<PsiClass> results = new HashSet<>();
+        Optional.of(psiClassReferenceType)
+                .map(PsiClassType::resolve)
+                .map(ClassInheritorsSearch::search)
+                .ifPresent(psiClasses -> psiClasses.forEach(psiClass -> {
+                    if (!psiClass.hasModifierProperty("abstract")) {
+                        results.add(psiClass);
+                    }
+                }));
+        return results;
+    }
+
+    private Optional<LookupElementBuilder> buildClassLookup(PsiClass psiClass) {
+        String qualifiedName = psiClass.getQualifiedName();
+        String name = psiClass.getName();
+        if (qualifiedName != null && name != null) {
+            return Optional.of(JavaLookupElementBuilder.forClass(psiClass, qualifiedName, true).withPresentableText(name));
+        } else {
+            return Optional.empty();
         }
     }
 }

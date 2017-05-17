@@ -8,20 +8,18 @@ import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLLanguage;
 import org.jetbrains.yaml.YAMLTokenTypes;
-import org.jetbrains.yaml.psi.YAMLKeyValue;
-import org.jetbrains.yaml.psi.YAMLMapping;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.seedstack.intellij.config.util.CoffigPsiUtil.isConfigFile;
+import static org.seedstack.intellij.config.util.CoffigPsiUtil.isKey;
+import static org.seedstack.intellij.config.util.CoffigPsiUtil.isValue;
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.resolvePath;
 
 public class CoffigCompletionContributor extends CompletionContributor {
@@ -43,40 +41,71 @@ public class CoffigCompletionContributor extends CompletionContributor {
         @Override
         protected void addCompletions(@NotNull CompletionParameters completionParameters, ProcessingContext processingContext, @NotNull CompletionResultSet completionResultSet) {
             Stream<LookupElementBuilder> stream = null;
-            if (isConfigFile(completionParameters)) {
-                PsiElement position = completionParameters.getPosition();
-                PsiElement parentContext = position.getParent().getContext();
-                PsiElement leftContext = Optional.ofNullable(position.getContext()).map(PsiElement::getPrevSibling).orElse(null);
-                List<String> path = resolvePath(position);
+            PsiElement position = completionParameters.getPosition();
 
-                if (parentContext instanceof YAMLMapping || leftContext != null && ((LeafPsiElement) leftContext).getElementType() == YAMLTokenTypes.INDENT) {
-                    stream = KEY_COMPLETION_PROVIDER.resolve(path, position);
-                } else if (parentContext instanceof YAMLKeyValue) {
-                    String prefix = completionResultSet.getPrefixMatcher().getPrefix();
-                    if (isInsideMacro(prefix)) {
-                        String reference = prefix.substring(prefix.lastIndexOf(MACRO_START) + MACRO_START.length());
-                        String[] referencePath = reference.isEmpty() ? new String[0] : reference.split("\\.");
-                        stream = KEY_COMPLETION_PROVIDER.resolve(Arrays.asList(referencePath), position);
-                    } else {
-                        stream = VALUE_COMPLETION_PROVIDER.resolve(path, position);
-                    }
+            // No completion on ordinary YAML files
+            if (!isConfigFile(position)) {
+                return;
+            }
+
+            // Completion for YAML keys
+            if (isKey(position)) {
+                stream = KEY_COMPLETION_PROVIDER.resolve(resolvePath(position), position)
+                        .map(prev -> LookupElementBuilder.create(prev.getLookupString() + ": ")
+                                .withPresentableText(prev.getLookupString())
+                        );
+            }
+            // Completion for YAML values
+            else if (isValue(position)) {
+                String prefix = completionResultSet.getPrefixMatcher().getPrefix();
+                if (isInsideMacro(prefix)) {
+                    MacroInfo macroInfo = resolveMacroInfo(prefix, completionResultSet);
+                    completionResultSet = macroInfo.completionResultSet;
+                    stream = KEY_COMPLETION_PROVIDER.resolve(macroInfo.path, position);
+                } else {
+                    stream = VALUE_COMPLETION_PROVIDER.resolve(resolvePath(position), position);
                 }
             }
 
+            // Add lookup elements to completion results
             if (stream != null) {
-                stream.forEach(element -> {
-                    System.out.println(element);
-                    completionResultSet.addElement(element);
-                });
+                stream.forEach(completionResultSet::addElement);
             }
         }
 
-        private boolean isConfigFile(@NotNull CompletionParameters completionParameters) {
-            return Objects.equals(completionParameters.getOriginalFile().getLanguage().getID(), "coffig/yaml");
+        private MacroInfo resolveMacroInfo(String prefix, CompletionResultSet completionResultSet) {
+            String reference = prefix.substring(prefix.lastIndexOf(MACRO_START) + MACRO_START.length());
+            int lastDotIndex = reference.lastIndexOf(".");
+            String[] path;
+            if (reference.isEmpty()) {
+                // empty reference
+                completionResultSet = completionResultSet.withPrefixMatcher("");
+                path = new String[0];
+            } else if (lastDotIndex != -1) {
+                // reference with at least one dot
+                completionResultSet = completionResultSet.withPrefixMatcher(reference.substring(lastDotIndex + 1));
+                path = reference.substring(0, lastDotIndex).split("\\.");
+            } else {
+                // reference without dot
+                completionResultSet = completionResultSet.withPrefixMatcher(reference);
+                path = new String[0];
+            }
+            return new MacroInfo(path, completionResultSet);
         }
+
 
         private boolean isInsideMacro(String prefix) {
             return prefix.lastIndexOf(MACRO_START) > prefix.lastIndexOf(MACRO_END);
+        }
+
+        private static class MacroInfo {
+            private final List<String> path;
+            private final CompletionResultSet completionResultSet;
+
+            private MacroInfo(String[] path, CompletionResultSet completionResultSet) {
+                this.path = Arrays.asList(path);
+                this.completionResultSet = completionResultSet;
+            }
         }
     }
 }
