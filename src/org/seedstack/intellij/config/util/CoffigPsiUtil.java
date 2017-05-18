@@ -62,12 +62,12 @@ public final class CoffigPsiUtil {
         return path;
     }
 
-    public static Optional<PsiField> findConfigField(PsiClass configClass, String propertyName) {
+    public static Optional<PsiField> findConfigField(PsiClass configAnnotation, PsiClass configClass, String propertyName) {
         for (PsiField psiField : configClass.getAllFields()) {
             if (propertyName.equals(psiField.getName())) {
                 return Optional.of(psiField);
             }
-            Optional<String> realName = findConfigAnnotation(psiField).flatMap(CoffigPsiUtil::getConfigValue);
+            Optional<String> realName = findConfigAnnotation(configAnnotation, psiField).flatMap(CoffigPsiUtil::getConfigValue);
             if (realName.isPresent() && propertyName.equals(realName.get())) {
                 return Optional.of(psiField);
             }
@@ -75,7 +75,7 @@ public final class CoffigPsiUtil {
         return Optional.empty();
     }
 
-    public static Optional<PsiClass> findConfigClass(List<String> path, PsiClass configAnnotation, Project project) {
+    public static Optional<PsiClass> findConfigClass(PsiClass configAnnotation, Project project, List<String> path) {
         PsiClass resultClass = null;
         for (String part : path) {
             Optional<PsiClass> psiClass = Optional.ofNullable(findConfigClasses(configAnnotation, project, resultClass).get(part));
@@ -92,18 +92,18 @@ public final class CoffigPsiUtil {
         Map<String, PsiClass> configClasses = new HashMap<>();
         AnnotatedElementsSearch.searchPsiClasses(configAnnotation, GlobalSearchScope.allScope(project)).forEach(psiClass -> {
             if (psiClass.getContainingClass() == containingClass) {
-                findConfigAnnotation(psiClass).flatMap(CoffigPsiUtil::getConfigValue).ifPresent(key -> configClasses.put(key, psiClass));
+                findConfigAnnotation(configAnnotation, psiClass).flatMap(CoffigPsiUtil::getConfigValue).ifPresent(key -> configClasses.put(key, psiClass));
             }
             return true;
         });
         return configClasses;
     }
 
-    public static Optional<PsiAnnotation> findConfigAnnotation(PsiModifierListOwner psiModifierListOwner) {
+    public static Optional<PsiAnnotation> findConfigAnnotation(PsiClass configAnnotation, PsiModifierListOwner psiModifierListOwner) {
         return Optional.ofNullable(psiModifierListOwner.getModifierList())
                 .map(PsiAnnotationOwner::getAnnotations)
                 .map(Arrays::stream)
-                .map(stream -> stream.filter(annotation -> COFFIG_ANNOTATION_QNAME.equals(annotation.getQualifiedName())))
+                .map(stream -> stream.filter(annotation -> annotation.isEquivalentTo(configAnnotation)))
                 .flatMap(Stream::findFirst);
     }
 

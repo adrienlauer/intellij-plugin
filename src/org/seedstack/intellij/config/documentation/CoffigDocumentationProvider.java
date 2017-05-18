@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.findConfigClass;
+import static org.seedstack.intellij.config.util.CoffigPsiUtil.findConfigClasses;
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.isConfigFile;
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.resolveConfigAnnotation;
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.resolvePath;
@@ -69,7 +70,7 @@ public class CoffigDocumentationProvider implements DocumentationProvider {
                 }
 
                 return resolveConfigAnnotation(project)
-                        .flatMap(psiClass -> findConfigClass(pathToClass, psiClass, project))
+                        .flatMap(configAnnotation -> findConfigClass(configAnnotation, project, pathToClass))
                         .flatMap(configClass -> findResourceBundle(project, configClass))
                         .flatMap(propertiesFile -> extractConfigInfo(propertiesFile, String.join(".", path), propertyName));
             }

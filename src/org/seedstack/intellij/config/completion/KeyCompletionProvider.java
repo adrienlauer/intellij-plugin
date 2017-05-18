@@ -42,22 +42,22 @@ class KeyCompletionProvider implements CompletionResolver {
 
         Stream<String> keyStream = findConfigClasses(configAnnotation.get(), project, containingClass).keySet().stream();
         if (containingClass != null) {
-            keyStream = Stream.concat(keyStream, Arrays.stream(containingClass.getAllFields()).map(this::resolveFieldName));
+            keyStream = Stream.concat(keyStream, Arrays.stream(containingClass.getAllFields()).map(psiField -> resolveFieldName(configAnnotation.get(), psiField)));
         }
 
         return keyStream.map(key -> key.split("\\.")[0])
                 .map(LookupElementBuilder::create);
     }
 
-    private String resolveFieldName(PsiField psiField) {
-        return findConfigAnnotation(psiField)
+    private String resolveFieldName(PsiClass configAnnotation, PsiField psiField) {
+        return findConfigAnnotation(configAnnotation, psiField)
                 .flatMap(CoffigPsiUtil::getConfigValue)
                 .orElseGet(() ->
                         Optional.of(psiField)
                                 .map(PsiVariable::getType)
                                 .filter(psiType -> psiType instanceof PsiClassType)
                                 .map(psiType -> ((PsiClassType) psiType).resolve())
-                                .flatMap(CoffigPsiUtil::findConfigAnnotation)
+                                .flatMap(psiClass -> findConfigAnnotation(configAnnotation, psiClass))
                                 .flatMap(CoffigPsiUtil::getConfigValue)
                                 .orElse(psiField.getName())
                 );

@@ -46,8 +46,8 @@ class ValueCompletionProvider implements CompletionResolver {
                 } else {
                     pathToClass = new ArrayList<>();
                 }
-                return findConfigClass(pathToClass, configAnnotation.get(), project)
-                        .flatMap(configClass -> findConfigField(configClass, propertyName))
+                return findConfigClass(configAnnotation.get(), project, pathToClass)
+                        .flatMap(configClass -> findConfigField(configAnnotation.get(), configClass, propertyName))
                         .map(PsiVariable::getType)
                         .map(psiType -> buildStream(path, position, psiType))
                         .orElse(Stream.empty());
