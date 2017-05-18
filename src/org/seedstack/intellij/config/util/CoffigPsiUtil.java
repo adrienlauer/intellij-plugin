@@ -8,6 +8,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiModifierListOwner;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.AnnotatedElementsSearch;
@@ -103,7 +104,11 @@ public final class CoffigPsiUtil {
         return Optional.ofNullable(psiModifierListOwner.getModifierList())
                 .map(PsiAnnotationOwner::getAnnotations)
                 .map(Arrays::stream)
-                .map(stream -> stream.filter(annotation -> annotation.isEquivalentTo(configAnnotation)))
+                .map(stream -> stream.filter(annotation -> Optional.ofNullable(annotation.getNameReferenceElement())
+                        .map(PsiReference::resolve)
+                        .map(psiElement -> psiElement == configAnnotation)
+                        .orElse(false)
+                ))
                 .flatMap(Stream::findFirst);
     }
 

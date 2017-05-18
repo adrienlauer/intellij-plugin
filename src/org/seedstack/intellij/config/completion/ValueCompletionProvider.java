@@ -12,7 +12,6 @@ import com.intellij.psi.impl.source.PsiClassReferenceType;
 import org.seedstack.intellij.spi.config.CompletionResolver;
 import org.seedstack.intellij.spi.config.ValueCompletionResolver;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -38,19 +37,16 @@ class ValueCompletionProvider implements CompletionResolver {
         Project project = position.getProject();
         Optional<PsiClass> configAnnotation = resolveConfigAnnotation(project);
         if (configAnnotation.isPresent()) {
-            if (path.size() > 0) {
+            if (path.size() > 1) {
                 String propertyName = path.get(path.size() - 1);
-                List<String> pathToClass;
-                if (path.size() > 1) {
-                    pathToClass = path.subList(0, path.size() - 1);
-                } else {
-                    pathToClass = new ArrayList<>();
-                }
+                List<String> pathToClass = path.subList(0, path.size() - 1);
                 return findConfigClass(configAnnotation.get(), project, pathToClass)
                         .flatMap(configClass -> findConfigField(configAnnotation.get(), configClass, propertyName))
                         .map(PsiVariable::getType)
                         .map(psiType -> buildStream(path, position, psiType))
                         .orElse(Stream.empty());
+            } else if (path.size() == 1) {
+                // TODO handle single values: maybe with findConfigClasses returning a stream that can be filtered (in that case with a filter searching for @SingleValue annotation)
             }
         }
         return Stream.empty();

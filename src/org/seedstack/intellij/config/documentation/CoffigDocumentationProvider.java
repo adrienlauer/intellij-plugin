@@ -12,13 +12,11 @@ import com.intellij.psi.PsiPackage;
 import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.findConfigClass;
-import static org.seedstack.intellij.config.util.CoffigPsiUtil.findConfigClasses;
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.isConfigFile;
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.resolveConfigAnnotation;
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.resolvePath;
@@ -60,19 +58,15 @@ public class CoffigDocumentationProvider implements DocumentationProvider {
         if (isConfigFile(psiElement)) {
             Project project = psiElement.getProject();
             List<String> path = resolvePath(psiElement);
-            if (!path.isEmpty()) {
+            if (path.size() > 1) {
                 String propertyName = path.get(path.size() - 1);
-                List<String> pathToClass;
-                if (path.size() > 1) {
-                    pathToClass = path.subList(0, path.size() - 1);
-                } else {
-                    pathToClass = new ArrayList<>();
-                }
-
+                List<String> pathToClass = path.subList(0, path.size() - 1);
                 return resolveConfigAnnotation(project)
                         .flatMap(configAnnotation -> findConfigClass(configAnnotation, project, pathToClass))
                         .flatMap(configClass -> findResourceBundle(project, configClass))
                         .flatMap(propertiesFile -> extractConfigInfo(propertiesFile, String.join(".", path), propertyName));
+            } else if (path.size() == 1) {
+                // TODO handle single values: maybe with findConfigClasses returning a stream that can be filtered (in that case with a filter searching for @SingleValue annotation)
             }
         }
         return Optional.empty();
