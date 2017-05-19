@@ -7,25 +7,26 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiPackage;
+import com.intellij.psi.PsiType;
+import com.intellij.psi.PsiVariable;
 import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.Nullable;
+import org.seedstack.intellij.config.CoffigClasses;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.seedstack.intellij.config.util.CoffigPsiUtil.findConfigClass;
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.isConfigFile;
-import static org.seedstack.intellij.config.util.CoffigPsiUtil.resolveConfigAnnotation;
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.resolvePath;
 
 public class CoffigDocumentationProvider implements DocumentationProvider {
     @Nullable
     @Override
     public String getQuickNavigateInfo(PsiElement psiElement, PsiElement originalElement) {
-
         return null;
     }
 
@@ -41,6 +42,18 @@ public class CoffigDocumentationProvider implements DocumentationProvider {
         return resolveConfigInfo(psiElement).map(this::buildDescription).orElse(null);
     }
 
+    @Nullable
+    @Override
+    public PsiElement getDocumentationElementForLookupItem(PsiManager psiManager, Object o, PsiElement psiElement) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getDocumentationElementForLink(PsiManager psiManager, String s, PsiElement psiElement) {
+        return null;
+    }
+
     private String buildDescription(ConfigInfo configInfo) {
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>");
@@ -50,33 +63,44 @@ public class CoffigDocumentationProvider implements DocumentationProvider {
         } else {
             sb.append(configInfo.getDescription());
         }
+        if (configInfo.getType() != null) {
+            sb.append("<h2>Type</h2>");
+            sb.append("<code>").append(configInfo.getType()).append("</code>");
+        }
         sb.append("</body></html>");
         return sb.toString();
     }
 
     private Optional<ConfigInfo> resolveConfigInfo(PsiElement psiElement) {
         if (isConfigFile(psiElement)) {
-            Project project = psiElement.getProject();
-            List<String> path = resolvePath(psiElement);
-            if (path.size() > 1) {
-                String propertyName = path.get(path.size() - 1);
-                List<String> pathToClass = path.subList(0, path.size() - 1);
-                return resolveConfigAnnotation(project)
-                        .flatMap(configAnnotation -> findConfigClass(configAnnotation, project, pathToClass))
-                        .flatMap(configClass -> findResourceBundle(project, configClass))
-                        .flatMap(propertiesFile -> extractConfigInfo(propertiesFile, String.join(".", path), propertyName));
-            } else if (path.size() == 1) {
-                // TODO handle single values: maybe with findConfigClasses returning a stream that can be filtered (in that case with a filter searching for @SingleValue annotation)
+            String[] path = resolvePath(psiElement);
+            if (path.length > 0) {
+                Project project = psiElement.getProject();
+                return CoffigClasses.from(project)
+                        .onlyAtTopLevel()
+                        .find(String.join(".", path), 0)
+                        .flatMap(match -> findResourceBundle(project, match.getConfigClass()).flatMap(propertiesFile -> extractConfigInfo(propertiesFile, match)));
             }
         }
         return Optional.empty();
     }
 
-    private Optional<ConfigInfo> extractConfigInfo(PropertiesFile propertiesFile, String path, String propertyName) {
-        Optional<String> description = Optional.ofNullable(propertiesFile.findPropertyByKey(propertyName)).map(IProperty::getValue);
+    private Optional<ConfigInfo> extractConfigInfo(PropertiesFile propertiesFile, CoffigClasses.Match match) {
+        Optional<String> description = Optional.ofNullable(propertiesFile.findPropertyByKey(match.getUnmatchedPath())).map(IProperty::getValue);
         if (description.isPresent()) {
-            ConfigInfo configInfo = new ConfigInfo(path, description.get());
-            Optional.ofNullable(propertiesFile.findPropertyByKey(propertyName + ".long")).map(IProperty::getValue).ifPresent(configInfo::setLongDescription);
+            // Base info
+            ConfigInfo configInfo = new ConfigInfo(match.getFullPath(), description.get());
+
+            // Extended info
+            Optional.ofNullable(propertiesFile.findPropertyByKey(match.getUnmatchedPath() + ".long")).map(IProperty::getValue).ifPresent(configInfo::setLongDescription);
+
+            // Field info
+            CoffigClasses.Match resolvedMatch = match.fullyResolve();
+            if (resolvedMatch.isFullyResolved()) {
+                Optional<PsiField> psiField = resolvedMatch.resolveField(resolvedMatch.getUnmatchedPath());
+                psiField.map(PsiVariable::getType).map(PsiType::getPresentableText).ifPresent(configInfo::setType);
+            }
+
             return Optional.of(configInfo);
         }
         return Optional.empty();
@@ -99,42 +123,39 @@ public class CoffigDocumentationProvider implements DocumentationProvider {
         return Optional.empty();
     }
 
-    @Nullable
-    @Override
-    public PsiElement getDocumentationElementForLookupItem(PsiManager psiManager, Object o, PsiElement psiElement) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public PsiElement getDocumentationElementForLink(PsiManager psiManager, String s, PsiElement psiElement) {
-        return null;
-    }
-
     private static class ConfigInfo {
         private final String path;
         private final String description;
         private String longDescription;
+        private String type;
 
         private ConfigInfo(String path, String description) {
             this.path = path;
             this.description = description;
         }
 
-        public String getPath() {
+        String getPath() {
             return path;
         }
 
-        private String getDescription() {
+        String getDescription() {
             return description;
         }
 
-        public String getLongDescription() {
+        String getLongDescription() {
             return longDescription;
         }
 
-        public void setLongDescription(String longDescription) {
+        void setLongDescription(String longDescription) {
             this.longDescription = longDescription;
+        }
+
+        String getType() {
+            return type;
+        }
+
+        void setType(String type) {
+            this.type = type.replace("<", "&lt;").replace(">", "&gt;");
         }
     }
 }

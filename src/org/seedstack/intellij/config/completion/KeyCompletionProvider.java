@@ -21,7 +21,7 @@ import static org.seedstack.intellij.config.util.CoffigPsiUtil.resolveConfigAnno
 
 class KeyCompletionProvider implements CompletionResolver {
     @Override
-    public Stream<LookupElementBuilder> resolve(List<String> path, PsiElement position) {
+    public Stream<LookupElementBuilder> resolve(String[] path, PsiElement position) {
         Project project = position.getProject();
         Optional<PsiClass> configAnnotation = resolveConfigAnnotation(project);
         if (!configAnnotation.isPresent()) {
@@ -29,7 +29,7 @@ class KeyCompletionProvider implements CompletionResolver {
         }
 
         PsiClass containingClass = null;
-        if (!path.isEmpty()) {
+        if (path.length > 0) {
             for (String part : path) {
                 PsiClass subConfigClass = findConfigClasses(configAnnotation.get(), project, containingClass).get(part);
                 if (subConfigClass == null) {

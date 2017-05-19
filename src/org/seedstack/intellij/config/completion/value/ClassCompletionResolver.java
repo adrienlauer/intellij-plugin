@@ -11,7 +11,6 @@ import org.seedstack.intellij.spi.config.ValueCompletionResolver;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -25,7 +24,7 @@ public class ClassCompletionResolver implements ValueCompletionResolver {
     }
 
     @Override
-    public Stream<LookupElementBuilder> resolveCompletions(List<String> path, PsiClass rawType, PsiType[] parameterTypes) {
+    public Stream<LookupElementBuilder> resolveCompletions(String[] path, PsiClass rawType, PsiType[] parameterTypes) {
         Stream<PsiClass> psiClassStream = null;
         if (parameterTypes.length == 1 && parameterTypes[0] instanceof PsiWildcardType) {
             PsiWildcardType psiWildcardType = ((PsiWildcardType) parameterTypes[0]);

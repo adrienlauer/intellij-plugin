@@ -10,5 +10,5 @@ import java.util.stream.Stream;
 public interface ValueCompletionResolver {
     boolean canHandle(PsiClass rawType);
 
-    Stream<LookupElementBuilder> resolveCompletions(List<String> path, PsiClass rawType, PsiType[] parameterTypes);
+    Stream<LookupElementBuilder> resolveCompletions(String[] path, PsiClass rawType, PsiType[] parameterTypes);
 }

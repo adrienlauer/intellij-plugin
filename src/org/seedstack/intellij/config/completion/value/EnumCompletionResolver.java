@@ -8,7 +8,6 @@ import com.intellij.psi.PsiType;
 import org.seedstack.intellij.spi.config.ValueCompletionResolver;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -19,7 +18,7 @@ public class EnumCompletionResolver implements ValueCompletionResolver {
     }
 
     @Override
-    public Stream<LookupElementBuilder> resolveCompletions(List<String> path, PsiClass rawType, PsiType[] parameterTypes) {
+    public Stream<LookupElementBuilder> resolveCompletions(String[] path, PsiClass rawType, PsiType[] parameterTypes) {
         return Arrays.stream(rawType.getChildren())
                 .filter(child -> child instanceof PsiEnumConstant)
                 .map(child -> buildEnumLookup((PsiEnumConstant) child))

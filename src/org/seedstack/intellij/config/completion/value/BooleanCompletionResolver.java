@@ -5,7 +5,6 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiType;
 import org.seedstack.intellij.spi.config.ValueCompletionResolver;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 public class BooleanCompletionResolver implements ValueCompletionResolver {
@@ -19,9 +18,9 @@ public class BooleanCompletionResolver implements ValueCompletionResolver {
     }
 
     @Override
-    public Stream<LookupElementBuilder> resolveCompletions(List<String> path, PsiClass rawType, PsiType[] parameterTypes) {
-        if (!path.isEmpty()) {
-            String propertyName = path.get(path.size() - 1);
+    public Stream<LookupElementBuilder> resolveCompletions(String[] path, PsiClass rawType, PsiType[] parameterTypes) {
+        if (path.length > 0) {
+            String propertyName = path[path.length - 1];
             if (ENABLED.equalsIgnoreCase(propertyName) || DISABLED.equalsIgnoreCase(propertyName)) {
                 return Stream.of("yes", "no").map(LookupElementBuilder::create);
             }

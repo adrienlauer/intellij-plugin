@@ -13,8 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLLanguage;
 import org.jetbrains.yaml.YAMLTokenTypes;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.seedstack.intellij.config.util.CoffigPsiUtil.isConfigFile;
@@ -99,11 +97,11 @@ public class CoffigCompletionContributor extends CompletionContributor {
         }
 
         private static class MacroInfo {
-            private final List<String> path;
+            private final String[] path;
             private final CompletionResultSet completionResultSet;
 
             private MacroInfo(String[] path, CompletionResultSet completionResultSet) {
-                this.path = Arrays.asList(path);
+                this.path = path;
                 this.completionResultSet = completionResultSet;
             }
         }

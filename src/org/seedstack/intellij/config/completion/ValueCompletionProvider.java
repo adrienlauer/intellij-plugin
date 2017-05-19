@@ -12,8 +12,8 @@ import com.intellij.psi.impl.source.PsiClassReferenceType;
 import org.seedstack.intellij.spi.config.CompletionResolver;
 import org.seedstack.intellij.spi.config.ValueCompletionResolver;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -33,26 +33,26 @@ class ValueCompletionProvider implements CompletionResolver {
     }
 
     @Override
-    public Stream<LookupElementBuilder> resolve(List<String> path, PsiElement position) {
+    public Stream<LookupElementBuilder> resolve(String[] path, PsiElement position) {
         Project project = position.getProject();
         Optional<PsiClass> configAnnotation = resolveConfigAnnotation(project);
         if (configAnnotation.isPresent()) {
-            if (path.size() > 1) {
-                String propertyName = path.get(path.size() - 1);
-                List<String> pathToClass = path.subList(0, path.size() - 1);
+            if (path.length > 1) {
+                String propertyName = path[path.length - 1];
+                String[] pathToClass = Arrays.copyOfRange(path, 0, path.length - 1);
                 return findConfigClass(configAnnotation.get(), project, pathToClass)
                         .flatMap(configClass -> findConfigField(configAnnotation.get(), configClass, propertyName))
                         .map(PsiVariable::getType)
                         .map(psiType -> buildStream(path, position, psiType))
                         .orElse(Stream.empty());
-            } else if (path.size() == 1) {
+            } else if (path.length == 1) {
                 // TODO handle single values: maybe with findConfigClasses returning a stream that can be filtered (in that case with a filter searching for @SingleValue annotation)
             }
         }
         return Stream.empty();
     }
 
-    private Stream<LookupElementBuilder> buildStream(List<String> path, PsiElement position, PsiType psiType) {
+    private Stream<LookupElementBuilder> buildStream(String[] path, PsiElement position, PsiType psiType) {
         Optional<PsiClass> rawType;
         PsiType[] parameterTypes;
         if (psiType instanceof PsiClassReferenceType) {

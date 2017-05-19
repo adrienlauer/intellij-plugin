@@ -53,14 +53,14 @@ public final class CoffigPsiUtil {
         return position.getParent().getContext() instanceof YAMLKeyValue;
     }
 
-    public static List<String> resolvePath(PsiElement psiElement) {
+    public static String[] resolvePath(PsiElement psiElement) {
         List<String> path = new ArrayList<>();
         do {
             if (psiElement instanceof YAMLKeyValue) {
                 path.add(0, ((YAMLKeyValue) psiElement).getKeyText());
             }
         } while ((psiElement = psiElement.getParent()) != null);
-        return path;
+        return path.toArray(new String[path.size()]);
     }
 
     public static Optional<PsiField> findConfigField(PsiClass configAnnotation, PsiClass configClass, String propertyName) {
@@ -76,7 +76,7 @@ public final class CoffigPsiUtil {
         return Optional.empty();
     }
 
-    public static Optional<PsiClass> findConfigClass(PsiClass configAnnotation, Project project, List<String> path) {
+    public static Optional<PsiClass> findConfigClass(PsiClass configAnnotation, Project project, String[] path) {
         PsiClass resultClass = null;
         for (String part : path) {
             Optional<PsiClass> psiClass = Optional.ofNullable(findConfigClasses(configAnnotation, project, resultClass).get(part));
