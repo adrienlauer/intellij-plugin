@@ -67,6 +67,10 @@ public class CoffigDocumentationProvider implements DocumentationProvider {
             sb.append("<h2>Type</h2>");
             sb.append("<code>").append(configInfo.getType()).append("</code>");
         }
+        if (configInfo.getDefaultValue() != null) {
+            sb.append("<h2>Default value</h2>");
+            sb.append("<code>").append(configInfo.getDefaultValue()).append("</code>");
+        }
         sb.append("</body></html>");
         return sb.toString();
     }
@@ -128,6 +132,7 @@ public class CoffigDocumentationProvider implements DocumentationProvider {
         private final String description;
         private String longDescription;
         private String type;
+        private String defaultValue;
 
         private ConfigInfo(String path, String description) {
             this.path = path;
@@ -156,6 +161,14 @@ public class CoffigDocumentationProvider implements DocumentationProvider {
 
         void setType(String type) {
             this.type = type.replace("<", "&lt;").replace(">", "&gt;");
+        }
+
+        public void setDefaultValue(String defaultValue) {
+            this.defaultValue = defaultValue;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
         }
     }
 }

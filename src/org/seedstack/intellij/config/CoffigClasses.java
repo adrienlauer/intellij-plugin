@@ -15,7 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.seedstack.intellij.config.util.CoffigPsiUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -39,7 +41,46 @@ public class CoffigClasses {
             this.context = context;
         }
 
-        public Stream<PsiClass> classes() {
+        public Stream<Match> all() {
+            return classStream()
+                    .map(psiClass -> {
+                        String[] path = resolvePath(psiClass);
+                        return buildMatch(path, path.length, psiClass);
+                    });
+        }
+
+        public Optional<Match> find(@NotNull String path) {
+            return find(path, -1);
+        }
+
+        public Optional<Match> find(@NotNull String path, int limit) {
+            String[] split = path.split("\\.");
+            if (limit >= -1 && split.length > 0) {
+                return classStream()
+                        .filter(psiClass -> classMatch(psiClass, split[0]))
+                        .map(candidate -> findSub(split, candidate, limit))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .findFirst();
+            }
+            return Optional.empty();
+        }
+
+        private String[] resolvePath(PsiClass psiClass) {
+            List<String> path = new ArrayList<>();
+            do {
+                Optional<String> name = context.getConfigAnnotation(psiClass).flatMap(context::getConfigValue);
+                if (name.isPresent()) {
+                    path.add(0, name.get());
+                } else {
+                    return new String[0];
+                }
+                psiClass = psiClass.getContainingClass();
+            } while (psiClass != null);
+            return path.toArray(new String[path.size()]);
+        }
+
+        Stream<PsiClass> classStream() {
             if (context.isValid()) {
                 Stream<PsiClass> stream = StreamSupport.stream(
                         AnnotatedElementsSearch.searchPsiClasses(
@@ -56,23 +97,6 @@ public class CoffigClasses {
             }
         }
 
-        public Optional<Match> find(@NotNull String path) {
-            return find(path, -1);
-        }
-
-        public Optional<Match> find(@NotNull String path, int limit) {
-            String[] split = path.split("\\.");
-            if (limit >= -1 && split.length > 0) {
-                return classes()
-                        .filter(psiClass -> classMatch(psiClass, split[0]))
-                        .map(candidate -> findSub(split, candidate, limit))
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .findFirst();
-            }
-            return Optional.empty();
-        }
-
         private Optional<Match> findSub(@NotNull String[] path, @Nullable PsiClass startClass, int limit) {
             PsiClass result = startClass;
             int i;
@@ -80,7 +104,7 @@ public class CoffigClasses {
                 String part = path[i];
                 Optional<PsiClass> found = CoffigClasses.from(context.getProject())
                         .onlyInside(startClass)
-                        .classes()
+                        .classStream()
                         .filter(psiClass -> classMatch(psiClass, part))
                         .findFirst();
                 if (found.isPresent()) {
@@ -142,12 +166,14 @@ public class CoffigClasses {
         private final PsiClass configClass;
         private final String matchedPath;
         private final String unmatchedPath;
+        private final String fullPath;
 
         Match(Context context, PsiClass configClass, String matchedPath, String unmatchedPath) {
             this.context = context;
             this.configClass = configClass;
             this.matchedPath = matchedPath;
             this.unmatchedPath = unmatchedPath;
+            this.fullPath = matchedPath + (!matchedPath.isEmpty() && !unmatchedPath.isEmpty() ? "." : "") + unmatchedPath;
         }
 
         public PsiClass getConfigClass() {
@@ -155,7 +181,7 @@ public class CoffigClasses {
         }
 
         public String getFullPath() {
-            return matchedPath + "." + unmatchedPath;
+            return fullPath;
         }
 
         public String getMatchedPath() {

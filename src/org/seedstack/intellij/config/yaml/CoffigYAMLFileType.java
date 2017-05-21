@@ -9,8 +9,8 @@ import org.seedstack.intellij.SeedStackIcons;
 
 import javax.swing.*;
 
-class CoffigYAMLFileType extends LanguageFileType implements FileTypeIdentifiableByVirtualFile {
-    static final CoffigYAMLFileType INSTANCE = new CoffigYAMLFileType();
+public class CoffigYAMLFileType extends LanguageFileType implements FileTypeIdentifiableByVirtualFile {
+    public static final CoffigYAMLFileType INSTANCE = new CoffigYAMLFileType();
 
     private CoffigYAMLFileType() {
         super(CoffigYAMLLanguage.INSTANCE);

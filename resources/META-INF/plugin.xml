@@ -28,6 +28,9 @@
         <lang.parserDefinition language="coffig/yaml" implementationClass="org.seedstack.intellij.config.yaml.CoffigYAMLParserDefinition"/>
         <annotator language="coffig/yaml" implementationClass="org.seedstack.intellij.config.annotator.CoffigAnnotator"/>
         <lang.documentationProvider language="coffig/yaml" implementationClass="org.seedstack.intellij.config.documentation.CoffigDocumentationProvider"/>
+        <codeInsight.lineMarkerProvider language="coffig/yaml" implementationClass="org.seedstack.intellij.config.marker.CoffigLineMarkerProvider"/>
         <completion.contributor language="yaml" implementationClass="org.seedstack.intellij.config.completion.CoffigCompletionContributor"/>
+        <psi.referenceContributor implementation="org.seedstack.intellij.config.reference.CoffigReferenceContributor"/>
+        <lang.findUsagesProvider language="yaml" implementationClass="org.seedstack.intellij.config.usage.CoffigFindUsagesProvider"/>
     </extensions>
 </idea-plugin>
