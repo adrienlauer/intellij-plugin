@@ -8,18 +8,48 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.indexing.FileBasedIndex;
 import org.jetbrains.yaml.psi.YAMLDocument;
 import org.jetbrains.yaml.psi.YAMLFile;
+import org.jetbrains.yaml.psi.YAMLKeyValue;
+import org.jetbrains.yaml.psi.YAMLPsiElement;
 import org.seedstack.intellij.config.yaml.CoffigYAMLFileType;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class CoffigUtil {
     private CoffigUtil() {
         // no instantiation allowed
     }
 
-    public static List<YAMLDocument> findCoffigKey(Project project, String path) {
+    public static Set<YAMLKeyValue> findCoffigKey(Project project, String path) {
+        Set<YAMLKeyValue> results = new HashSet<>();
+        for (YAMLDocument yamlDocument : findCoffigDocuments(project)) {
+            YAMLKeyValue yamlKeyValue = searchForKey(yamlDocument, path.split("\\."), 0);
+            if (yamlKeyValue != null) {
+                results.add(yamlKeyValue);
+            }
+        }
+        return results;
+    }
+
+    private static YAMLKeyValue searchForKey(YAMLPsiElement yamlPsiElement, String[] path, int index) {
+        if (index < path.length) {
+            for (YAMLPsiElement current : yamlPsiElement.getYAMLElements()) {
+                if (current instanceof YAMLKeyValue) {
+                    if (path[index].equals(((YAMLKeyValue) current).getKeyText())) {
+                        if (index == path.length - 1) {
+                            return ((YAMLKeyValue) current);
+                        } else {
+                            return searchForKey(current, path, index + 1);
+                        }
+                    }
+                } else {
+                    return searchForKey(current, path, index);
+                }
+            }
+        }
         return null;
     }
 

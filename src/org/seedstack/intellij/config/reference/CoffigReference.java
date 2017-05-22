@@ -4,6 +4,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementResolveResult;
 import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.ResolveResult;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CoffigReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
-    private String key;
+    private final String key;
 
     public CoffigReference(@NotNull PsiElement element, TextRange textRange) {
         super(element, textRange);
@@ -25,8 +26,12 @@ public class CoffigReference extends PsiReferenceBase<PsiElement> implements Psi
     @NotNull
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
-        Project project = myElement.getProject();
-        final List<Object> coffig = CoffigUtil.findCoffigDocuments(project);
+        if (key != null) {
+            Project project = myElement.getProject();
+            return CoffigUtil.findCoffigKey(project, key).stream()
+                    .map(PsiElementResolveResult::new)
+                    .toArray(ResolveResult[]::new);
+        }
         return new ResolveResult[0];
     }
 
@@ -41,7 +46,7 @@ public class CoffigReference extends PsiReferenceBase<PsiElement> implements Psi
     @Override
     public Object[] getVariants() {
         Project project = myElement.getProject();
-        List<LookupElement> variants = new ArrayList<LookupElement>();
+        List<LookupElement> variants = new ArrayList<>();
         return variants.toArray();
     }
 }

@@ -26,7 +26,7 @@ public class CoffigReferenceContributor extends PsiReferenceContributor {
                                 (String) literalExpression.getValue() : null;
                         if (value != null) {
                             return new PsiReference[]{
-                                    new CoffigReference(element, new TextRange(8, value.length() + 1))};
+                                    new CoffigReference(element, new TextRange(1, value.length() + 1))};
                         }
                         return PsiReference.EMPTY_ARRAY;
                     }

@@ -57,7 +57,11 @@ public class CoffigFindUsagesProvider implements FindUsagesProvider {
     @Override
     public String getNodeText(@NotNull PsiElement element, boolean useFullName) {
         if (element instanceof YAMLKeyValue) {
-            return ((YAMLKeyValue) element).getKeyText() + ":" + ((YAMLKeyValue) element).getValueText();
+            if (useFullName) {
+                return String.join(".", CoffigPsiUtil.resolvePath(element));
+            } else {
+                return ((YAMLKeyValue) element).getKeyText();
+            }
         } else {
             return "";
         }
